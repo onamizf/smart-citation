@@ -200,7 +200,11 @@
 .case-feedback[data-result="retry"] { background: #fff3e5; color: #6e4826; }
 .case-next { margin-top: 15px; display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; }
 .case-next p { margin: 0; font-weight: 750; }
-.case-next[hidden] { display: none; }
+.case-next[hidden], [data-after-cases][hidden] { display: none !important; }
+.case-pick[data-solved]::after {
+  content: "✓"; flex: none; margin-left: auto; color: #137b57; font-size: 16px;
+}
+#caseTitle:focus-visible { outline: 2px solid #315dca; outline-offset: 5px; }
 @media (max-width: 760px) {
   .hero-grid { grid-template-columns: 1fr; gap: 15px; }
   .hero-art { width: min(76%, 320px); }
@@ -223,7 +227,7 @@
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap nav"><div class="brand">SMART / УЧЕБНЫЙ МОДУЛЬ</div><nav aria-label="Разделы"><a href="#everyday">Ситуации</a><a href="#diagnostic">Диагностика</a><a href="#routes">Маршруты</a><a href="#assistant">Помощник</a><a href="#final">Итог</a><a href="#sources">Источники</a></nav></div></header>
+<header class="top"><div class="wrap nav"><div class="brand">SMART / УЧЕБНЫЙ МОДУЛЬ</div><nav aria-label="Разделы"><a href="#everyday">Ситуации</a><a href="#diagnostic" data-after-cases hidden>Диагностика</a><a href="#routes" data-after-cases hidden>Маршруты</a><a href="#assistant" data-after-cases hidden>Помощник</a><a href="#final" data-after-cases hidden>Итог</a><a href="#sources" data-after-cases hidden>Источники</a></nav></div></header>
 <main>
 <section class="hero hero-refresh">
   <div class="wrap hero-grid">
@@ -232,8 +236,8 @@
       <h1>Цитата, пересказ <span>или плагиат?</span></h1>
       <p>Что делать, если хочется повторить совет из видео, взять фото для слайдов или рассказать о командном проекте? Разберитесь на знакомых ситуациях.</p>
       <div class="hero-actions">
-        <a class="btn hero-primary" href="#everyday">Попробовать на примерах <span aria-hidden="true">↓</span></a>
-        <a class="hero-secondary" href="#diagnostic">Перейти к учебному модулю</a>
+        <a class="btn hero-primary" href="#everyday">Начать с четырёх ситуаций <span aria-hidden="true">↓</span></a>
+        <a class="hero-secondary" href="#diagnostic" data-after-cases hidden>Перейти к учебному модулю</a>
       </div>
       <p class="hero-meta">12–15 минут · 2 учебных маршрута · помощь «Цитатника»</p>
     </div>
@@ -253,7 +257,7 @@
     <div class="everyday-heading">
       <div>
         <h2 id="everyday-title">Как бы вы поступили?</h2>
-        <p class="intro">Выберите знакомую ситуацию и проверьте своё решение.</p>
+        <p class="intro">Разберите все четыре ситуации. После четырёх верных ответов откроется входное задание.</p>
       </div>
       <p class="case-progress" id="caseProgress" aria-live="polite">Разобрано 0 из 4</p>
     </div>
@@ -265,7 +269,7 @@
     </div>
     <div class="case-detail" id="caseDetail">
       <div class="case-context">
-        <h3 id="caseTitle"></h3>
+        <h3 id="caseTitle" tabindex="-1"></h3>
         <p id="caseStory"></p>
         <p class="case-example" id="caseExample"></p>
         <blockquote class="case-material case-post" data-case-material="0" aria-label="Текст поста">
@@ -305,14 +309,16 @@
         <p class="case-question" id="caseQuestion"></p>
         <div class="case-options" id="caseOptions" role="group" aria-labelledby="caseQuestion"></div>
         <p class="case-feedback" id="caseFeedback" role="status" hidden></p>
+        <button class="btn secondary small case-next" id="caseAdvance" type="button" hidden>Следующая ситуация</button>
       </div>
     </div>
     <div class="case-next" id="caseNext" hidden>
-      <p>Вы разобрали все четыре ситуации.</p>
+      <p>Входное задание открыто.</p>
       <a class="btn dark" href="#diagnostic">Начать входную задачу</a>
     </div>
   </div>
 </section>
+<div id="courseContent" data-after-cases hidden>
 <section class="section" id="goal"><div class="wrap"><div class="cap">Что вы научитесь делать</div><h2>Один результат — два пути</h2><p class="intro">После модуля вы сможете классифицировать фрагменты учебной работы как корректную цитату, самостоятельный пересказ либо некорректное заимствование; назвать ошибку и выбрать способ её исправления.</p><div class="steps"><div class="step"><b>01 · Вход</b>Разобрать ситуацию</div><div class="step"><b>02 · Выбор</b>Получить маршрут</div><div class="step"><b>03 · Изучение</b>Пройти материал</div><div class="step"><b>04 · Практика</b>Сравнить фрагменты</div><div class="step"><b>05 · Оценка</b>Получить обратную связь</div></div><div class="case"><strong>Учебная проблема из задания №1</strong>Студент заменил слова в реферате синонимами, и показатель оригинальности вырос с 38% до 87%. Преподаватель всё равно вернул работу. Почему высокий процент оригинальности сам по себе не доказывает корректность заимствований?</div></div></section>
 <section class="section" id="diagnostic" style="background:#edf2fa"><div class="wrap"><div class="cap">Шаг 1</div><h2>Входная задача</h2><p class="intro">Прочитайте учебный пример и выберите ответ. На его основе модуль рекомендует путь. Вы сможете выбрать другой маршрут вручную.</p><div class="card"><div class="sample"><b>Исходный текст — специально созданный учебный пример, не цитата из реальной публикации</b>«Электронные библиотеки помогают студентам находить научные материалы и проверять сведения по нескольким источникам».</div><div class="sample"><b>Фрагмент из реферата</b>«Цифровые библиотеки содействуют учащимся в поиске научных материалов и проверке данных по разным источникам» [1].</div><h3>Как оценить этот фрагмент?</h3><div id="entranceChoices"><button type="button" class="choice" data-choice="a">А. Это корректный пересказ: есть ссылка [1], а слова заменены.</button><button type="button" class="choice" data-choice="b">Б. Это слишком близкий к оригиналу рерайт: ссылка сама по себе не делает его самостоятельным пересказом.</button><button type="button" class="choice" data-choice="c">В. Это прямая цитата, потому что смысл сохранён.</button></div><button class="btn dark" id="checkEntrance" type="button">Проверить ответ и выбрать маршрут</button><div id="entranceFeedback" role="status" aria-live="polite" class="hidden"></div></div></div></section>
 <section class="section" id="routes"><div class="wrap"><div class="cap">Шаг 2</div><h2>Выберите учебный маршрут</h2><p class="intro">Если входное задание вызвало затруднение, рекомендуется маршрут с поддержкой. Если ответ был верным — маршрут самостоятельного анализа. Оба ведут к одному итоговому заданию.</p><div class="grid"><article class="card route" id="supportedCard"><span class="label">Маршрут А · 7–9 минут</span><h3>С поддержкой</h3><p class="muted">Короткое объяснение, сравнение примеров, подсказки при ошибке и повторная попытка.</p><ul><li>Разобраться в трёх способах работы с источниками.</li><li>Проанализировать конкретные фрагменты.</li><li>Закрепить правило с объяснением.</li></ul><button type="button" class="btn secondary" data-route="supported">Пройти с подсказками</button></article><article class="card route independent" id="independentCard"><span class="label">Маршрут Б · 5–7 минут</span><h3>Самостоятельный</h3><p class="muted">Минимум теории, задача на поиск ошибок и проверка собственного решения.</p><ul><li>Самостоятельно оценить примеры.</li><li>Выбрать способ исправить заимствование.</li><li>Сверить рассуждение с эталоном.</li></ul><button type="button" class="btn secondary" data-route="independent">Пройти самостоятельно</button></article></div><p class="note" id="routeRecommendation" aria-live="polite">Рекомендация появится после входной задачи.</p></div></section>
@@ -323,9 +329,10 @@
 <section class="section" id="final"><div class="wrap"><div class="cap">Шаг 3 · общий результат</div><h2>Итоговое задание</h2><p class="intro">5 ситуаций · по одному ответу на каждую. За каждый правильный ответ начисляется 1 балл. Можно пройти повторно после просмотра объяснений. Рекомендуемый результат — минимум 4 из 5.</p><div class="card"><div class="level"><strong>Ваш прогресс</strong><span id="quizProgressLabel">0 из 5</span></div><div class="progress" aria-hidden="true"><div id="quizProgress"></div></div><form id="quizForm" style="margin-top:28px"></form><button class="btn dark" id="submitQuiz" type="button">Проверить итоговое задание</button> <button class="btn ghost" id="resetQuiz" type="button">Пройти тест заново</button><div id="quizResult" role="status" aria-live="polite"></div><div class="student-panel"><h3>Отправить результат преподавателю</h3><p class="note">Сначала проверьте ответы. Затем введите имя и отправьте результат. Преподаватель увидит время, маршрут, баллы и выбранные варианты в своей Google Таблице. Не вводите фамилию, телефон или другую личную информацию.</p><label for="studentName">Имя или учебный псевдоним</label><input id="studentName" type="text" maxlength="60" autocomplete="nickname" placeholder="Например: Студент 01"><label class="consent"><input id="sendConsent" type="checkbox">Я согласен(-на) отправить указанные данные преподавателю для проверки учебного задания.</label><button class="btn dark" id="sendResult" type="button" disabled>Отправить результат</button><div id="sendStatus" class="send-status" role="status" aria-live="polite"></div></div></div><p class="fine">Ответы первоначально проверяются в браузере. Только после отдельного согласия и нажатия «Отправить результат» указанные данные отправляются в Google Таблицу преподавателя. Данные не публикуются на странице.</p></div></section>
 <section class="section" id="reflection" style="background:#edf2fa"><div class="wrap"><div class="cap">Самопроверка</div><h2>Три вопроса перед сдачей работы</h2><div class="grid"><div class="card"><h3>Чья это мысль?</h3><p>Если идея взята у автора, укажите, откуда она получена, даже когда полностью переписали объяснение своими словами.</p></div><div class="card"><h3>Чьи это слова?</h3><p>Если оставили чужую формулировку дословно, выделите её как цитату и дайте ссылку в принятом стиле оформления.</p></div><div class="card"><h3>Могу ли пересказать без источника?</h3><p>Закройте оригинал, изложите смысл самостоятельно и потом проверьте точность — простой способ избегать механической замены синонимов.</p></div><div class="card"><h3>Можно ли проверить источник?</h3><p>Проверьте автора, название, данные публикации, номер страницы при цитировании, ссылку или DOI. Не используйте вымышленные библиографические записи.</p></div></div></div></section>
 <section class="section" id="sources"><div class="wrap"><div class="cap">Материалы для дальнейшего чтения</div><h2>Источники и методическая основа</h2><p class="intro">Учебная структура составлена по лекциям 6–10 о SMART-образовании и по вашему заданию №1. Примеры в упражнениях придуманы для тренировки; они не приписываются реальным авторам.</p><div class="card links"><a href="https://www.ox.ac.uk/students/academic/guidance/skills/plagiarism" target="_blank" rel="noopener noreferrer">University of Oxford — Plagiarism: случаи плагиата и близкого пересказа ↗</a><a href="https://owl.purdue.edu/owl/research_and_citation/using_research/quoting_paraphrasing_and_summarizing/index.html" target="_blank" rel="noopener noreferrer">Purdue OWL — Quoting, Paraphrasing, and Summarizing ↗</a><a href="https://owl.purdue.edu/owl/research_and_citation/using_research/quoting_paraphrasing_and_summarizing/paraphrasing.html" target="_blank" rel="noopener noreferrer">Purdue OWL — Paraphrase: Write It in Your Own Words ↗</a><a href="https://protect.gost.ru/gost/details/2eef7820-44bc-49a4-bf1f-fe51c54039dc" target="_blank" rel="noopener noreferrer">Росстандарт — ГОСТ Р 7.0.5–2008 «Библиографическая ссылка» ↗</a></div><p class="note">Правила оформления ссылок могут различаться в зависимости от требований университета или кафедры. Пример «[1, с. 45]» показывает структуру, а не действительную ссылку на учебный текст.</p></div></section>
-</main><button type="button" class="ai-fab" id="aiFab" data-ai-open aria-controls="aiPanel" aria-expanded="false"><span class="ai-avatar" aria-hidden="true">Ц</span><span class="ai-fab-text">Спросить Цитатника</span></button>
+</div>
+</main><button type="button" class="ai-fab" id="aiFab" data-after-cases hidden data-ai-open aria-controls="aiPanel" aria-expanded="false"><span class="ai-avatar" aria-hidden="true">Ц</span><span class="ai-fab-text">Спросить Цитатника</span></button>
 <div class="ai-panel" id="aiPanel" role="dialog" aria-label="Чат с помощником по цитированию" hidden><div class="ai-head"><span class="ai-avatar" aria-hidden="true">Ц</span><div><b>Помощник по цитированию</b><small>Цитатник</small></div><button type="button" id="aiClose" aria-label="Закрыть чат">×</button></div><div class="ai-log" id="aiLog" aria-live="polite"></div><button type="button" class="btn ghost small ai-example" id="aiExample">Пример вопроса о пересказе</button><form class="ai-input" id="aiForm"><textarea id="aiText" rows="1" maxlength="1500" placeholder="Опишите затруднение или вставьте фрагмент" aria-label="Сообщение"></textarea><button class="btn dark small" type="submit" aria-label="Отправить вопрос">➤</button></form><div class="ai-note">Помощник подсказывает, но не решает за вас. Ответы ИИ проверяйте по памятке модуля.</div></div>
-<footer class="footer"><div class="wrap"><b>Цитата, пересказ или плагиат?</b><p>SMART-образование · Практическая работа №2 · учебный модуль по теме задания №1.</p><a href="#diagnostic">Вернуться к началу</a></div></footer>
+<footer class="footer"><div class="wrap"><b>Цитата, пересказ или плагиат?</b><p>SMART-образование · Практическая работа №2 · учебный модуль по теме задания №1.</p><a href="#everyday">Вернуться к ситуациям</a></div></footer>
 <script>
 'use strict';
 // Вставьте сюда адрес опубликованного веб-приложения Google Apps Script (/exec).
@@ -390,9 +397,37 @@ const caseOptions = $('caseOptions');
 const caseFeedback = $('caseFeedback');
 const caseMaterials = document.querySelectorAll('[data-case-material]');
 const caseVideo = $('caseVideo');
-const caseAnswers = new Map();
+const courseContent = $('courseContent');
+const courseGates = document.querySelectorAll('[data-after-cases]');
+const caseProgressKey = 'smart-citation:cases:v1';
 const solvedCases = new Set();
+try {
+  const saved = JSON.parse(sessionStorage.getItem(caseProgressKey) || '[]');
+  if (Array.isArray(saved)) {
+    saved.filter(index => Number.isInteger(index) && everydayCases[index]).forEach(index => solvedCases.add(index));
+  }
+} catch {
+  // Прогресс работает и при недоступном хранилище браузера.
+}
+const caseAnswers = new Map([...solvedCases].map(index => [index, everydayCases[index].correct]));
 let currentCase = 0;
+
+function updateCourseAccess() {
+  const complete = solvedCases.size === everydayCases.length;
+  $('caseProgress').textContent = 'Разобрано ' + solvedCases.size + ' из ' + everydayCases.length;
+  $('caseAdvance').hidden = complete || !solvedCases.has(currentCase);
+  $('caseNext').hidden = !complete;
+  courseGates.forEach(element => { element.hidden = !complete; });
+  caseButtons.forEach((button, index) => button.toggleAttribute('data-solved', solvedCases.has(index)));
+}
+
+function showRequiredCases() {
+  const target = $(location.hash.slice(1));
+  if (courseContent.hidden && target && courseContent.contains(target)) {
+    history.replaceState(null, '', '#everyday');
+    $('everyday').scrollIntoView();
+  }
+}
 
 function showCaseFeedback(choice) {
   const scenario = everydayCases[currentCase];
@@ -434,9 +469,15 @@ function showCase(index) {
     return button;
   }));
   if (caseAnswers.has(index)) showCaseFeedback(caseAnswers.get(index));
+  updateCourseAccess();
 }
 
 caseButtons.forEach((button, index) => button.addEventListener('click', () => showCase(index)));
+$('caseAdvance').addEventListener('click', () => {
+  const next = everydayCases.findIndex((_, index) => index > currentCase && !solvedCases.has(index));
+  showCase(next >= 0 ? next : everydayCases.findIndex((_, index) => !solvedCases.has(index)));
+  $('caseTitle').focus();
+});
 caseOptions.addEventListener('click', event => {
   const button = event.target.closest('[data-option]');
   if (!button || solvedCases.has(currentCase)) return;
@@ -445,11 +486,13 @@ caseOptions.addEventListener('click', event => {
   showCaseFeedback(choice);
   if (choice === everydayCases[currentCase].correct) {
     solvedCases.add(currentCase);
-    $('caseProgress').textContent = 'Разобрано ' + solvedCases.size + ' из ' + everydayCases.length;
-    $('caseNext').hidden = solvedCases.size !== everydayCases.length;
+    try { sessionStorage.setItem(caseProgressKey, JSON.stringify([...solvedCases])); } catch {}
+    updateCourseAccess();
   }
 });
-showCase(0);
+showCase(Math.max(0, everydayCases.findIndex((_, index) => !solvedCases.has(index))));
+window.addEventListener('hashchange', showRequiredCases);
+showRequiredCases();
 
 const choices=$('entranceChoices');let entrance=null,route=null,practiceSelected=null,practiceDone=false;
 choices.addEventListener('click',e=>{let b=e.target.closest('button[data-choice]');if(!b)return;entrance=b.dataset.choice;choices.querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));});
