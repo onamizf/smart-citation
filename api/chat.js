@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
         headers: { 'content-type': 'application/json', authorization: 'Bearer ' + cfg.key },
         body: JSON.stringify({ model: process.env.AI_MODEL || cfg.model, max_tokens: 600, temperature: 0.3,
           messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages] }),
-        signal: AbortSignal.timeout(15000)
+        signal: AbortSignal.timeout(provider === 'gemini' ? 28000 : 15000)
       });
       if (!r.ok) {
         console.error(provider + ' API error', r.status);
@@ -75,6 +75,9 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ reply: text || 'Не получилось сформулировать ответ. Переформулируйте вопрос.' });
   } catch (e) {
     console.error('AI request failed', e.name);
+    if (e.name === 'TimeoutError') {
+      return res.status(504).json({ error: 'Цитатник не успел ответить. Попробуйте отправить вопрос ещё раз.' });
+    }
     return res.status(502).json({ error: 'Нет связи с помощником. Проверьте интернет и попробуйте ещё раз.' });
   }
 };
