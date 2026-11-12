@@ -174,6 +174,16 @@
 .case-context h3 { margin: 0; font-size: clamp(22px, 3vw, 32px); line-height: 1.15; letter-spacing: -.035em; }
 .case-context p { color: #38496d; }
 .case-context .case-example { margin-bottom: 0; padding: 11px 13px; border-left: 3px solid #8095e0; background: #ffffffa8; border-radius: 0 8px 8px 0; font-size: 14px; }
+.case-material { margin: 16px 0 0; }
+.case-material[hidden] { display: none; }
+.case-material img, .case-material video { display: block; width: 100%; height: auto; border-radius: 10px; }
+.case-material video { background: #17233c; }
+.case-material figcaption { margin-top: 7px; font-size: 13px; color: #435675; }
+.case-material summary { cursor: pointer; font-weight: 750; }
+.case-material details p { margin: 8px 0 0; }
+.case-post { padding: 13px 15px; border-left: 3px solid #8095e0; border-radius: 0 8px 8px 0; background: #ffffffbd; font-size: 14px; }
+.case-post p { margin: 0; }
+.case-post p + p { margin-top: 9px; }
 .case-question { margin: 0 0 10px; font-weight: 780; }
 .case-options { display: grid; gap: 7px; }
 .case-option {
@@ -258,6 +268,38 @@
         <h3 id="caseTitle"></h3>
         <p id="caseStory"></p>
         <p class="case-example" id="caseExample"></p>
+        <blockquote class="case-material case-post" data-case-material="0" aria-label="Текст поста">
+          <p>Вечером я отправила в чат группы ссылку на презентацию к завтрашней паре. Через минуту одногруппники прислали скриншот с сообщением «Запросить доступ». Я открыла ссылку у себя, и слайды сразу загрузились. Потом заглянула в настройки и увидела, что доступ был только у меня. Я дала ребятам доступ к презентации и попросила открыть ссылку ещё раз. На этот раз всё получилось.</p>
+          <p><strong>Перед отправкой файла проверьте, открывается ли ссылка у другого человека.</strong></p>
+        </blockquote>
+        <figure class="case-material" data-case-material="1" hidden>
+          <video id="caseVideo" controls playsinline preload="none" width="640" height="360" poster="./assets/pervyi-shag.webp" aria-label="Первый шаг, учебный 3D-ролик">
+            <source src="./assets/pervyi-shag.mp4" type="video/mp4">
+            <a href="./assets/pervyi-shag.mp4">Открыть ролик «Первый шаг»</a>
+          </video>
+          <figcaption>
+            «Первый шаг» · 55 секунд
+            <details>
+              <summary>Описание ролика</summary>
+              <p>Вечером студентка закрывает лишние вкладки и записывает в блокнот три дела на завтра. Утром откладывает телефон, начинает с презентации и отмечает выполненное дело.</p>
+            </details>
+          </figcaption>
+        </figure>
+        <figure class="case-material" data-case-material="2" hidden>
+          <img src="./assets/foto-dlya-slaydov.webp" alt="Открытая книга, блокнот и рука студента на столе у окна библиотеки" width="1200" height="670" loading="lazy" decoding="async">
+          <figcaption>Учебная иллюстрация, созданная в Gemini</figcaption>
+        </figure>
+        <figure class="case-material" data-case-material="3" hidden>
+          <img src="./assets/komandnyy-proekt.webp" alt="Три сообщения в учебном чате «Командный проект». Текст переписки можно открыть под изображением." width="1200" height="896" loading="lazy" decoding="async">
+          <figcaption>
+            <details>
+              <summary>Прочитать переписку</summary>
+              <p><b>Малика.</b> У меня идея: давайте покажем, как работает наш проект, на короткой демонстрации.</p>
+              <p><b>Фотима.</b> Хорошо! Я соберу демонстрацию и проверю, что всё открывается.</p>
+              <p><b>Малика.</b> Договорились. Я пока подготовлю объяснение идеи для первого слайда.</p>
+            </details>
+          </figcaption>
+        </figure>
       </div>
       <div class="case-decisions">
         <p class="case-question" id="caseQuestion"></p>
@@ -296,7 +338,7 @@ const everydayCases = [
   {
     title: 'Пост в чате',
     story: 'В групповом чате вы хотите поделиться удачной формулировкой из открытого поста.',
-    example: 'Из поста: «Перед отправкой файла проверьте, открывается ли ссылка у другого человека».',
+    example: '',
     question: 'Как передать эту фразу дословно?',
     options: [
       ['Взять фразу в кавычки и дать ссылку на пост.', 'Кавычки отмечают чужие слова, а ссылка ведёт к публикации.'],
@@ -346,6 +388,8 @@ const everydayCases = [
 const caseButtons = Array.from(document.querySelectorAll('[data-case]'));
 const caseOptions = $('caseOptions');
 const caseFeedback = $('caseFeedback');
+const caseMaterials = document.querySelectorAll('[data-case-material]');
+const caseVideo = $('caseVideo');
 const caseAnswers = new Map();
 const solvedCases = new Set();
 let currentCase = 0;
@@ -364,12 +408,16 @@ function showCaseFeedback(choice) {
 }
 
 function showCase(index) {
+  if (currentCase === 1 && index !== 1) caseVideo.pause();
   currentCase = index;
+  caseMaterials.forEach(material => { material.hidden = Number(material.dataset.caseMaterial) !== index; });
   const scenario = everydayCases[index];
   caseButtons.forEach((button, buttonIndex) => button.setAttribute('aria-pressed', String(buttonIndex === index)));
   $('caseTitle').textContent = scenario.title;
   $('caseStory').textContent = scenario.story;
-  $('caseExample').textContent = scenario.example;
+  const example = $('caseExample');
+  example.textContent = scenario.example;
+  example.hidden = !scenario.example;
   $('caseQuestion').textContent = scenario.question;
   caseFeedback.hidden = true;
   caseFeedback.textContent = '';

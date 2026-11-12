@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "mkdir -p dist && cp index.html dist/index.html",
+  "buildCommand": "mkdir -p dist && cp index.html dist/index.html && cp -r assets dist/assets",
   "outputDirectory": "dist",
   "functions": {
     "api/chat.js": {
