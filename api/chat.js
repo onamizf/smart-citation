@@ -51,16 +51,34 @@ module.exports = async function handler(req, res) {
       if (!r.ok) { console.error('Claude API error', r.status); return res.status(502).json({ error: 'Помощник временно недоступен. Попробуйте позже или задайте вопрос преподавателю.' }); }
       text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
     } else {
-      // Gemini и Groq принимают одинаковый формат запроса (OpenAI-совместимый)
-      const cfg = provider === 'gemini'
-        ? { url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', key: process.env.GEMINI_API_KEY, model: 'gemini-3.1-flash-lite' }
-        : { url: 'https://api.groq.com/openai/v1/chat/completions', key: process.env.GROQ_API_KEY, model: 'llama-3.3-70b-versatile' };
-      const r = await fetch(cfg.url, {
+      const isGemini = provider === 'gemini';
+      const model = process.env.AI_MODEL || (isGemini ? 'gemini-3.1-flash-lite' : 'llama-3.3-70b-versatile');
+      let url;
+      let headers;
+      let payload;
+      if (isGemini) {
+        const modelId = encodeURIComponent(model.replace(/^models\//, ''));
+        url = 'https://generativelanguage.googleapis.com/v1beta/models/' + modelId + ':generateContent';
+        headers = { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY };
+        payload = {
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: messages.map(message => ({
+            role: message.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: message.content }]
+          })),
+          generationConfig: { maxOutputTokens: 600, temperature: 0.3 }
+        };
+      } else {
+        url = 'https://api.groq.com/openai/v1/chat/completions';
+        headers = { 'content-type': 'application/json', authorization: 'Bearer ' + process.env.GROQ_API_KEY };
+        payload = { model, max_tokens: 600, temperature: 0.3,
+          messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages] };
+      }
+      const r = await fetch(url, {
         method: 'POST',
-        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + cfg.key },
-        body: JSON.stringify({ model: process.env.AI_MODEL || cfg.model, max_tokens: 600, temperature: 0.3,
-          messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages] }),
-        signal: AbortSignal.timeout(provider === 'gemini' ? 28000 : 15000)
+        headers,
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(isGemini ? 28000 : 15000)
       });
       if (!r.ok) {
         console.error(provider + ' API error', r.status);
@@ -70,7 +88,11 @@ module.exports = async function handler(req, res) {
         return res.status(502).json({ error: 'Помощник временно недоступен. Попробуйте позже или задайте вопрос преподавателю.' });
       }
       const data = await r.json();
-      text = ((data.choices || [])[0]?.message?.content || '').trim();
+      text = isGemini
+        ? (data.candidates?.[0]?.content?.parts || [])
+          .filter(part => !part.thought && typeof part.text === 'string')
+          .map(part => part.text).join('').trim()
+        : (data.choices?.[0]?.message?.content || '').trim();
     }
     return res.status(200).json({ reply: text || 'Не получилось сформулировать ответ. Переформулируйте вопрос.' });
   } catch (e) {
