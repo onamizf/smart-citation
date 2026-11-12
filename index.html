@@ -108,7 +108,7 @@
   border-radius: 24%;
   font-weight: 850;
   font-size: clamp(25px, 9cqi, 52px);
-  animation: art-float 5s ease-in-out 3;
+  animation: art-float 4.4s ease-in-out 1;
 }
 .art-quote {
   --tilt: -13deg; top: 10%; left: 5%;
@@ -124,14 +124,15 @@
   color: #2c205f; font-size: 9cqi;
   transform: rotate(var(--tilt));
   box-shadow: 0 7px 0 #5e4bb5, 0 17px 28px #08102773, inset 0 2px 0 #fff7;
-  animation-delay: .8s;
+  animation-delay: .35s;
 }
+.art-play::before, .icon-video::before { content: ""; display: block; width: 33%; aspect-ratio: .88; background: currentColor; clip-path: polygon(6% 0, 100% 50%, 6% 100%); }
 .art-link {
   --tilt: -15deg; right: 11%; bottom: 13%;
   background: linear-gradient(140deg, #a3f3e9, #63d4c3);
   transform: rotate(var(--tilt));
   box-shadow: 0 7px 0 #348b81, 0 17px 28px #08102773, inset 0 2px 0 #fff8;
-  animation-delay: .45s;
+  animation-delay: .2s;
 }
 .art-link i { position: absolute; width: 40%; height: 23%; border: .85cqi solid #184e54; border-radius: 999px; transform: rotate(-31deg); }
 .art-link i:first-child { left: 19%; top: 45%; }
@@ -231,7 +232,7 @@
       <div class="art-paper art-paper-back"></div>
       <div class="art-paper art-paper-front"><i></i><i></i><i></i><i></i></div>
       <div class="art-tile art-quote"></div>
-      <div class="art-tile art-play">▶</div>
+      <div class="art-tile art-play"></div>
       <div class="art-tile art-link"><i></i><i></i></div>
       <span class="art-spark art-spark-one">✦</span><span class="art-spark art-spark-two">✦</span>
     </div>
@@ -248,7 +249,7 @@
     </div>
     <div class="case-picker" role="group" aria-label="Жизненные ситуации">
       <button class="case-pick" type="button" data-case="0" aria-pressed="true" aria-controls="caseDetail"><span class="case-icon icon-post" aria-hidden="true">“</span><span>Пост в чате</span></button>
-      <button class="case-pick" type="button" data-case="1" aria-pressed="false" aria-controls="caseDetail"><span class="case-icon icon-video" aria-hidden="true">▶</span><span>Совет из видео</span></button>
+      <button class="case-pick" type="button" data-case="1" aria-pressed="false" aria-controls="caseDetail"><span class="case-icon icon-video" aria-hidden="true"></span><span>Совет из видео</span></button>
       <button class="case-pick" type="button" data-case="2" aria-pressed="false" aria-controls="caseDetail"><span class="case-icon icon-photo" aria-hidden="true">▧</span><span>Фото для слайдов</span></button>
       <button class="case-pick" type="button" data-case="3" aria-pressed="false" aria-controls="caseDetail"><span class="case-icon icon-team" aria-hidden="true">⇄</span><span>Командный проект</span></button>
     </div>
